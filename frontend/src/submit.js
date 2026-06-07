@@ -10,20 +10,23 @@ export const SubmitButton = () => {
     nodes: state.nodes,
     edges: state.edges,
   }));
-  
+
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async () => {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch('http://localhost:8000/pipelines/parse', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+      const response = await fetch(
+        'https://vectorshift-backend-z2sy.onrender.com/pipelines/parse',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ nodes, edges }),
         },
-        body: JSON.stringify({ nodes, edges }),
-      });
+      );
 
       if (!response.ok) {
         throw new Error(`Server error: ${response.statusText}`);
@@ -34,7 +37,9 @@ export const SubmitButton = () => {
 
       // Single polished result interface using SweetAlert2
       Swal.fire({
-        title: is_dag ? 'Pipeline Analysis: Valid DAG' : 'Pipeline Analysis: Cycle Detected',
+        title: is_dag
+          ? 'Pipeline Analysis: Valid DAG'
+          : 'Pipeline Analysis: Cycle Detected',
         icon: is_dag ? 'success' : 'warning',
         confirmButtonText: 'Close',
         confirmButtonColor: '#4f46e5', // SaaS Indigo 600
@@ -63,16 +68,16 @@ export const SubmitButton = () => {
                 ${is_dag ? 'Graph is Acyclic (DAG)' : 'Cycle Warning'}
               </div>
               <div style="font-size: 12px; opacity: 0.9; line-height: 1.4;">
-                ${is_dag 
-                  ? 'All nodes have valid dependencies. This pipeline is a valid Directed Acyclic Graph.' 
-                  : 'Feedback loops detected in connection routes. This is not a valid Directed Acyclic Graph.'
+                ${
+                  is_dag
+                    ? 'All nodes have valid dependencies. This pipeline is a valid Directed Acyclic Graph.'
+                    : 'Feedback loops detected in connection routes. This is not a valid Directed Acyclic Graph.'
                 }
               </div>
             </div>
           </div>
-        `
+        `,
       });
-
     } catch (error) {
       Swal.fire({
         title: 'Failed to Analyze Pipeline',
@@ -83,7 +88,7 @@ export const SubmitButton = () => {
         customClass: {
           popup: 'retool-swal-popup',
           title: 'retool-swal-title',
-        }
+        },
       });
     } finally {
       setIsSubmitting(false);
@@ -91,10 +96,17 @@ export const SubmitButton = () => {
   };
 
   return (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px 0' }}>
-      <button 
-        type="button" 
-        onClick={handleSubmit} 
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '20px 0',
+      }}
+    >
+      <button
+        type="button"
+        onClick={handleSubmit}
         disabled={isSubmitting}
         className="retool-submit-btn"
       >
@@ -103,7 +115,9 @@ export const SubmitButton = () => {
             <span className="spinner"></span>
             Analyzing...
           </span>
-        ) : 'Submit Pipeline'}
+        ) : (
+          'Submit Pipeline'
+        )}
       </button>
     </div>
   );
